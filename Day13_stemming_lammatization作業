@@ -1,0 +1,255 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from nltk.stem import WordNetLemmatizer \n",
+    "from nltk.stem.porter import PorterStemmer\n",
+    "import nltk\n",
+    "#nltk.download('wordnet')\n",
+    "## 創建stemmer\n",
+    "ps=PorterStemmer()\n",
+    "\n",
+    "## 創建Lemmatizer\n",
+    "lemmatizer = WordNetLemmatizer() "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### example"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [
+    {
+     "output_type": "stream",
+     "name": "stdout",
+     "text": [
+      "Stemming amusing : univers\nlemmatization amusing : university\n"
+     ]
+    }
+   ],
+   "source": [
+    "from datetime import datetime\n",
+    "word = 'university' #amusing\n",
+    "\n",
+    "\n",
+    "print('Stemming amusing : {}'.format(ps.stem(word)))\n",
+    "\n",
+    "print('lemmatization amusing : {}'.format(lemmatizer.lemmatize(word,pos = 'v')))\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 運用tokenize技巧結合stemming提取每個單詞的詞幹"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "output_type": "stream",
+     "name": "stdout",
+     "text": [
+      "['The', 'striped', 'bats', 'are', 'hanging', 'on', 'their', 'feet', 'for', 'best']\nthe stripe bat are hang on their feet for best\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Define the sentence to be lemmatized\n",
+    "sentence = \"The striped bats are hanging on their feet for best\"\n",
+    "\n",
+    "# Tokenize: Split the sentence into words\n",
+    "word_list = nltk.word_tokenize(sentence)\n",
+    "print(word_list)\n",
+    "#> ['The', 'striped', 'bats', 'are', 'hanging', 'on', 'their', 'feet', 'for', 'best']\n",
+    "\n",
+    "stemming_output = ' '.join([ps.stem(w) for w in word_list])\n",
+    "print(stemming_output)\n",
+    "#> The striped bat are hanging on their foot for best"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 運用tokenize技巧結合lemmatize提取每個單詞的lemma"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "output_type": "stream",
+     "name": "stdout",
+     "text": [
+      "['The', 'striped', 'bats', 'are', 'hanging', 'on', 'their', 'feet', 'for', 'best']\nThe striped bat are hanging on their foot for best\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Define the sentence to be lemmatized\n",
+    "sentence = \"The striped bats are hanging on their feet for best\"\n",
+    "\n",
+    "# Tokenize: Split the sentence into words\n",
+    "word_list = nltk.word_tokenize(sentence)\n",
+    "print(word_list)\n",
+    "#> ['The', 'striped', 'bats', 'are', 'hanging', 'on', 'their', 'feet', 'for', 'best']\n",
+    "\n",
+    "# Lemmatize list of words and join\n",
+    "lemmatized_output = ' '.join([lemmatizer.lemmatize(word, pos='') for w in word_list])\n",
+    "print(lemmatized_output)\n",
+    "#> The striped bat are hanging on their foot for best"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 有時單詞的lemma會隨著詞性而有所改變"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {},
+   "outputs": [
+    {
+     "output_type": "stream",
+     "name": "stdout",
+     "text": [
+      "lemmatization amusing : amuse\nlemmatization amusing : amusing\n"
+     ]
+    }
+   ],
+   "source": [
+    "print('lemmatization amusing : {}'.format(lemmatizer.lemmatize('amusing',pos = 'v'))) ##動詞\n",
+    "print('lemmatization amusing : {}'.format(lemmatizer.lemmatize('amusing',pos = 'a'))) ##形容詞"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 運用pos_tag技巧結合lemmatize提取每個單詞的lemma"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 44,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Lemmatize with POS Tag\n",
+    "from nltk.corpus import wordnet\n",
+    "\n",
+    "def get_wordnet_pos(word):\n",
+    "    \"\"\"將pos_tag結果mapping到lemmatizer中pos的格式\"\"\"\n",
+    "    tag = nltk.pos_tag([word])[0][1][0].upper()\n",
+    "    print(nltk.pos_tag([word]))\n",
+    "    tag_dict = {\"J\": wordnet.ADJ,\n",
+    "                \"N\": wordnet.NOUN,\n",
+    "                \"V\": wordnet.VERB,\n",
+    "                \"R\": wordnet.ADV}\n",
+    "\n",
+    "    return tag_dict.get(tag, wordnet.NOUN)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 50,
+   "metadata": {},
+   "outputs": [
+    {
+     "output_type": "stream",
+     "name": "stdout",
+     "text": [
+      "[('using', 'VBG')]\nuse\n"
+     ]
+    }
+   ],
+   "source": [
+    "word = 'using'\n",
+    "print(lemmatizer.lemmatize(word, get_wordnet_pos(word)))\n",
+    "#print(lemmatizer.lemmatize(word, wordnet.VERB))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Lemmatize 字串中每個單詞並加入 POS tag"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 52,
+   "metadata": {},
+   "outputs": [
+    {
+     "output_type": "stream",
+     "name": "stdout",
+     "text": [
+      "[('The', 'DT')]\n[('striped', 'VBD')]\n[('bats', 'NNS')]\n[('are', 'VBP')]\n[('hanging', 'VBG')]\n[('on', 'IN')]\n[('their', 'PRP$')]\n[('feet', 'NNS')]\n[('for', 'IN')]\n[('best', 'JJS')]\n['The', 'strip', 'bat', 'be', 'hang', 'on', 'their', 'foot', 'for', 'best']\n"
+     ]
+    }
+   ],
+   "source": [
+    "sentence = \"The striped bats are hanging on their feet for best\"\n",
+    "print([lemmatizer.lemmatize(w, get_wordnet_pos(w)) for w in sentence.split()])\n",
+    "#> ['The', 'strip', 'bat', 'be', 'hang', 'on', 'their', 'foot', 'for', 'best']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.6-final"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
